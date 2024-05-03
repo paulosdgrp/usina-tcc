@@ -1,13 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    webpack(config) {
-        config.module.rules.push({
-            test: /\.svg$/,
-            use: ['@svgr/webpack'],
-        });
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    });
 
-        return config;
-    }
+    return config;
+  },
 };
 
-export default nextConfig;
+export default {
+  ...nextConfig,
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
+};
