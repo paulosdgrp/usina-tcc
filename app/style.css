@@ -1,0 +1,50 @@
+#sol_svg__sun,
+#sol_svg__moon,
+#sol_svg__star-1,
+#sol_svg__star-2 {
+    transition: all 0.5s;
+}
+
+#sol_svg__moon,
+#sol_svg__star-1,
+#sol_svg__star-2 {
+    opacity: 0;
+}
+
+
+.sky-bg {
+    transition: all 0.5s;
+}
+
+.sun-svg {
+    width: 200px;
+    transform: translate(20px, 85px);
+    z-index: 1;
+    position: relative;
+}
+
+.usina-svg {
+    width: 300px;
+    z-index: 2;
+    position: relative;
+}
+
+.bg-filter-1 {
+    position: absolute;
+    top: 90px;
+    height: 310px;
+    width: 750px;
+    background-color: #002944;
+    mix-blend-mode: exclusion;
+    z-index: 3;
+}
+
+.bg-filter-2 {
+    position: absolute;
+    top: 90px;
+    height: 310px;
+    width: 750px;
+    background-color: #002944;
+    mix-blend-mode: difference;
+    z-index: 3;
+}
