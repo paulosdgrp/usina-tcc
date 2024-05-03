@@ -62,7 +62,7 @@ export default function Home() {
 
         const { day, month, hour } = dateTime;
 
-        const response = await axios.get('http://localhost:3000/temperature', {
+        const response = await axios.get('https://usina-tcc-bnqw.vercel.app/temperature', {
             params: {
                 day: day,
                 month: month,
