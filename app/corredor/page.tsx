@@ -2,6 +2,8 @@
 import { useSearchParams } from 'next/navigation';
 import { ReactNode, useState } from 'react';
 import { SolarPanelHorizontal } from '../temperature/components/solar-panel';
+import { useToast } from '@/components/ui/use-toast';
+import Link from 'next/link';
 
 export default function Corredor() {
     const searchParams = useSearchParams();
@@ -16,16 +18,19 @@ export default function Corredor() {
         setSelectedModule(null);
     };
 
+    const random = (max: number, min: number): number =>
+        Math.floor(Math.random() * (max - min + 1) + min);
+
     return (
-        <main className='sky-bg flex min-h-screen flex-col items-center gap-2 p-4 sm:px-16 sm:py-24'>
-            <p>String {corridorNumber}</p>
+        <main className='sky-bg flex min-h-screen flex-col items-center gap-2 p-8 sm:px-16 sm:py-24 bg-slate-200'>
+            <p className='font-bold'>String {corridorNumber}</p>
             {Array.from({ length: 16 }).map((_, index) => (
                 <div
                     className='w-full flex flex-row gap-8 justify-center items-center'
                     key={index}
                 >
                     <div
-                        className='transition-all duration-200 border-black cursor-pointer hover:border-blue-700 p-2 rounded-lg'
+                        className='bg-slate-50 drop-shadow-md shadow-black transition-all duration-200 border-black cursor-pointer hover:border-blue-700 p-1 rounded-lg'
                         onClick={() => handleModuleClick(index)}
                     >
                         <SolarPanelHorizontal
@@ -35,7 +40,10 @@ export default function Corredor() {
                 </div>
             ))}
             {selectedModule !== null && (
-                <Modal onClose={handleModuleClose}>
+                <Modal
+                    showChamado={selectedModule === 3 && corridorNumber === 3}
+                    onClose={handleModuleClose}
+                >
                     <div className='w-full'>
                         <p className='font-extrabold text-lg'>
                             Módulo {selectedModule + 1}
@@ -52,51 +60,69 @@ export default function Corredor() {
                         </div>
                         <div
                             className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3
+                                selectedModule === 3 && corridorNumber === 3
                                     ? 'text-black'
                                     : 'text-black'
                             }`}
                         >
-                            <p className='font-extrabold'>Potência</p>
-                            <p>{selectedModule === 3 ? '700wp' : '700Wp'}</p>
+                            <p className='font-extrabold'>Potência Máxima</p>
+                            <p>
+                                {selectedModule === 3 && corridorNumber === 3
+                                    ? '700wp'
+                                    : '700Wp'}
+                            </p>
+                        </div>
+                        <div
+                            className={`flex flex-row justify-between w-full ${
+                                selectedModule === 3 && corridorNumber === 3
+                                    ? 'text-red-500'
+                                    : 'text-green-500'
+                            }`}
+                        >
+                            <p className='font-extrabold'>Potência Atual</p>
+                            <p>
+                                {selectedModule === 3 && corridorNumber === 3
+                                    ? `${random(100, 200)}W`
+                                    : `${random(700, 600)}W`}
+                            </p>
                         </div>
                         <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>
-                                Tensão máxima placa
-                            </p>
+                            <p className='font-extrabold'>Tensão Máxima</p>
                             <p>40V</p>
                         </div>
                         <div
                             className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3
+                                selectedModule === 3 && corridorNumber === 3
                                     ? 'text-red-500'
-                                    : 'text-black'
+                                    : 'text-green-500'
                             }`}
                         >
-                            <p className='font-extrabold'>Tensão atual placa</p>
+                            <p className='font-extrabold'>Tensão Atual</p>
                             <p>
-                                {selectedModule === 3
-                                    ? `${Math.floor(Math.random() * (20 + 1))}V`
-                                    : '40V'}
+                                {selectedModule === 3 && corridorNumber === 3
+                                    ? `${random(20, 0)}V`
+                                    : `${random(40, 35)}V`}
                             </p>
                         </div>
                         <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>
-                                Corrente Máxima Placa
-                            </p>
+                            <p className='font-extrabold'>Corrente Máxima</p>
                             <p>17.51A</p>
                         </div>
                         <div
                             className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3
+                                selectedModule === 3 && corridorNumber === 3
                                     ? 'text-red-500'
-                                    : 'text-black'
+                                    : 'text-green-500'
                             }`}
                         >
                             <p className='font-extrabold'>
                                 Corrente Atual Placa
                             </p>
-                            <p>{selectedModule === 3 ? `40.57A` : '17.51A'}</p>
+                            <p>
+                                {selectedModule === 3 && corridorNumber === 3
+                                    ? `${random(40, 35)}.35A`
+                                    : '17.51A'}
+                            </p>
                         </div>
                         <div className='flex flex-row justify-between w-full'>
                             <p className='font-extrabold'>Voc</p>
@@ -114,15 +140,17 @@ export default function Corredor() {
                         </div>{' '}
                         <div
                             className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3
+                                selectedModule === 3 && corridorNumber === 3
                                     ? 'text-red-500'
-                                    : 'text-black'
+                                    : 'text-green-500'
                             }`}
                         >
-                            <p className='font-extrabold'>
-                                Eficiencia Atual do Modul
+                            <p className='font-extrabold'>Eficiencia Atual</p>
+                            <p>
+                                {selectedModule === 3 && corridorNumber === 3
+                                    ? `${random(12, 0)}.0%`
+                                    : `${random(22, 20)}.5%`}
                             </p>
-                            <p>{selectedModule === 3 ? `10.0%` : '22.5%'}</p>
                         </div>
                         <div className='flex flex-row justify-between w-full'>
                             <p className='font-extrabold'>Degradação Anual</p>
@@ -142,8 +170,10 @@ export default function Corredor() {
 interface ModalProps {
     children: ReactNode;
     onClose: () => void;
+    showChamado: boolean;
 }
-const Modal = ({ children, onClose }: ModalProps) => {
+const Modal = ({ children, onClose, showChamado }: ModalProps) => {
+    const { toast } = useToast();
     return (
         <div className='fixed z-10 inset-0 overflow-y-auto'>
             <div className='flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0'>
@@ -152,7 +182,14 @@ const Modal = ({ children, onClose }: ModalProps) => {
                 </div>
                 <span className='hidden sm:inline-block sm:align-middle sm:h-screen'></span>
                 &#8203;
-                <div className='inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full'>
+                <div className='relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-[calc(100%-20px)] sm:max-w-lg sm:w-full'>
+                    <button
+                        onClick={onClose}
+                        type='button'
+                        className='absolute right-1 inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-transparent text-base font-medium text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 sm:ml-3 sm:w-auto sm:text-sm'
+                    >
+                        x
+                    </button>
                     <div className='bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4'>
                         <div className='sm:flex sm:items-start'>
                             <div className='mt-3 text-center sm:mt-0 sm:text-left w-full'>
@@ -160,14 +197,31 @@ const Modal = ({ children, onClose }: ModalProps) => {
                             </div>
                         </div>
                     </div>
-                    <div className='bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse'>
-                        <button
-                            onClick={onClose}
-                            type='button'
-                            className='w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm'
+                    <div className='bg-gray-50 px-4 py-3 sm:px-6 flex-row w-full flex justify-between'>
+                        {showChamado ? (
+                            <button
+                                onClick={() => {
+                                    toast({
+                                        title: 'Chamado enviado para o engenheiro.',
+                                        description:
+                                            'Alerta sobrecarga módulo 4',
+                                        variant: 'destructive',
+                                    });
+                                }}
+                                type='button'
+                                className='mr-auto text-sm inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 sm:ml-3 sm:w-auto sm:text-sm'
+                            >
+                                Abrir Chamado
+                            </button>
+                        ) : (
+                            <></>
+                        )}
+                        <Link
+                            href='/cameras'
+                            className='text-sm inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 sm:ml-3 sm:w-auto sm:text-sm'
                         >
-                            Fechar
-                        </button>
+                            Abrir Câmeras
+                        </Link>
                     </div>
                 </div>
             </div>

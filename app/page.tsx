@@ -10,7 +10,7 @@ import './style.css';
 import DateTimePicker, {
     DateTime,
 } from './temperature/components/datetime-picker';
-import { Slider } from './temperature/components/thermometer';
+import { Slider } from '@/components/ui/slider';
 export default function Home() {
     const [gb, setGb] = useState(0);
     const [gr, setGr] = useState(0);
@@ -62,13 +62,16 @@ export default function Home() {
 
         const { day, month, hour } = dateTime;
 
-        const response = await axios.get('https://usina-tcc-bnqw.vercel.app/temperature', {
-            params: {
-                day: day,
-                month: month,
-                hour: +hour,
-            },
-        });
+        const response = await axios.get(
+            'https://usina-tcc.vercel.app/temperature',
+            {
+                params: {
+                    day: day,
+                    month: month,
+                    hour: +hour,
+                },
+            }
+        );
 
         setIsDay(+hour >= 5 && +hour < 18);
         if (+hour === 5 || +hour === 17) {
@@ -95,20 +98,17 @@ export default function Home() {
         setP(response.data.p);
         setT2m(response.data.t2m);
         setWms(response.data.ws10m);
-        
-        
-        mudarTemperatura(Math.floor(response.data.t2m) + 1);
-        setMinSlider(Math.floor(response.data.t2m) + 1)
+
+        setMinSlider(Math.floor(response.data.t2m) + 1);
     };
 
-    const [temperatura, setTemperatura] = useState(30);
+    const [temperatura, setTemperatura] = useState(33);
     const [perda, setPerda] = useState(0);
     const [geracao, setGeracao] = useState(0);
     const [minSlider, setMinSlider] = useState(0);
 
-    function mudarTemperatura(newValue: number) {
-        console.log('pinto', newValue)
-        setTemperatura(newValue);
+    function mudarTemperatura([temperatura]: number[]) {
+        setTemperatura(temperatura);
 
         const percaEnergetica = (temperatura - t2m) * 0.3;
         setPerda(percaEnergetica);
@@ -117,6 +117,10 @@ export default function Home() {
             (gb / 1000) * 1300 * (1 - percaEnergetica / 100);
         setGeracao(geracaoEnergetica);
     }
+
+    useEffect(() => {
+        mudarTemperatura([33]);
+    }, [t2m]);
 
     return (
         <main
@@ -133,12 +137,6 @@ export default function Home() {
             <div className='relative'>
                 <SolSvg className='sun-svg' />
                 <UsinaSvg className='usina-svg' />
-                <Slider
-                    max={70}
-                    min={34}
-                    step={2}
-                    onChange={(newValue) => mudarTemperatura(newValue)}
-                />
             </div>
             <div
                 className='flex flex-col sm:flex-row w-full'
@@ -236,7 +234,7 @@ export default function Home() {
                     <div
                         className={`flex flex-row items-center justify-between p-2 ${secondStripe} gap-8`}
                     >
-                        <p className='font-bold'>Perca de Eficiencia (%)</p>
+                        <p className='font-bold'>Perda de Eficiencia (%)</p>
                         <p>{perda.toFixed(3)}</p>
                     </div>
                     <div
@@ -245,10 +243,22 @@ export default function Home() {
                         <p className='font-bold'>Geração de Energia (kW/h)</p>
                         <p>{geracao.toFixed(3)}</p>
                     </div>
+                    <Slider
+                        className='mt-4'
+                        defaultValue={[33]}
+                        max={100}
+                        min={minSlider}
+                        step={1}
+                        onValueChange={(newValue) => mudarTemperatura(newValue)}
+                    />
+                    <p className='mt-2'>
+                        Temperatura da placa:{' '}
+                        <span className='font-bold'>{temperatura}</span>
+                    </p>
                 </div>
             </div>
             <Link
-                className='px-12 py-4 bg-blue-200 rounded-lg active:bg-blue-300 transition-all duration-200'
+                className='px-12 py-4 bg-primary rounded-lg active:bg-blue-800 text-white transition-all duration-200'
                 href='/corredores'
             >
                 ver detalhes da usina
