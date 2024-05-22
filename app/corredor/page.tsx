@@ -69,7 +69,7 @@ export default function Corredor() {
                         </div>
                         <div className='flex flex-row justify-between w-full'>
                             <p className='font-extrabold'>Temperatura Atual</p>
-                            <p>{temperaturaAtual}</p>
+                            <p>{temperaturaAtual}°C</p>
                         </div>
                         <div
                             className={`flex flex-row justify-between w-full ${
@@ -138,11 +138,11 @@ export default function Corredor() {
                             </p>
                         </div>
                         <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Voc</p>
+                            <p className='font-extrabold'>Tensão de circuito aberto</p>
                             <p>47,9V</p>
                         </div>
                         <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Isc</p>
+                            <p className='font-extrabold'>Corrente de curto circuito</p>
                             <p>18.49A</p>
                         </div>
                         <div className='flex flex-row justify-between w-full'>
