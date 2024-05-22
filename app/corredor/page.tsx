@@ -67,6 +67,10 @@ export default function Corredor() {
                             <p className='font-extrabold'>Tecnologia</p>
                             <p>Topcon Bifacial</p>
                         </div>
+                        <div className='flex flex-row justify-between w-full'>
+                            <p className='font-extrabold'>Temperatura Atual</p>
+                            <p>{temperaturaAtual}</p>
+                        </div>
                         <div
                             className={`flex flex-row justify-between w-full ${
                                 selectedModule === 3 && corridorNumber === 3
