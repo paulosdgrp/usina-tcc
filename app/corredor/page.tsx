@@ -1,15 +1,18 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { SolarPanelHorizontal } from '../temperature/components/solar-panel';
 import { useToast } from '@/components/ui/use-toast';
 import Link from 'next/link';
+import { getCookie } from 'cookies-next';
 
 export default function Corredor() {
     const searchParams = useSearchParams();
     const corridorNumber = Number(searchParams.get('numero')!);
     const [selectedModule, setSelectedModule] = useState<number | null>(null);
-
+    const temperaturaAtual = parseInt(
+        getCookie('usina-tcc-temperatura')?.toString() || '0'
+    );
     const handleModuleClick = (index: number) => {
         setSelectedModule(index);
     };
@@ -18,9 +21,15 @@ export default function Corredor() {
         setSelectedModule(null);
     };
 
+    useEffect(() => {
+        console.log('biscoito porra - detalhe da usina', temperaturaAtual);
+    }, [temperaturaAtual]);
+
     const random = (max: number, min: number): number =>
         Math.floor(Math.random() * (max - min + 1) + min);
 
+    const correnteAtual = +(17.51*(1+(25 - temperaturaAtual) * (0.05/100))).toFixed(2);
+    const tensaoAtual = random(15, 1);
     return (
         <main className='sky-bg flex min-h-screen flex-col items-center gap-2 p-8 sm:px-16 sm:py-24 bg-slate-200'>
             <p className='font-bold'>String {corridorNumber}</p>
@@ -82,7 +91,7 @@ export default function Corredor() {
                             <p className='font-extrabold'>Potência Atual</p>
                             <p>
                                 {selectedModule === 3 && corridorNumber === 3
-                                    ? `${random(100, 200)}W`
+                                    ? `${(tensaoAtual * correnteAtual).toFixed(2)}W`
                                     : `${random(700, 600)}W`}
                             </p>
                         </div>
@@ -100,7 +109,7 @@ export default function Corredor() {
                             <p className='font-extrabold'>Tensão Atual</p>
                             <p>
                                 {selectedModule === 3 && corridorNumber === 3
-                                    ? `${random(20, 0)}V`
+                                    ? `${tensaoAtual}V`
                                     : `${random(40, 35)}V`}
                             </p>
                         </div>
@@ -120,7 +129,7 @@ export default function Corredor() {
                             </p>
                             <p>
                                 {selectedModule === 3 && corridorNumber === 3
-                                    ? `${random(40, 35)}.35A`
+                                    ? `${correnteAtual}A`
                                     : '17.51A'}
                             </p>
                         </div>
@@ -148,7 +157,7 @@ export default function Corredor() {
                             <p className='font-extrabold'>Eficiencia Atual</p>
                             <p>
                                 {selectedModule === 3 && corridorNumber === 3
-                                    ? `${random(12, 0)}.0%`
+                                    ? `${(22.5 - ((temperaturaAtual - 25) * 0.3)).toFixed(1)}%`
                                     : `${random(22, 20)}.5%`}
                             </p>
                         </div>

@@ -11,6 +11,7 @@ import DateTimePicker, {
     DateTime,
 } from './temperature/components/datetime-picker';
 import { Slider } from '@/components/ui/slider';
+import { getCookie, setCookie } from 'cookies-next';
 export default function Home() {
     const [gb, setGb] = useState(0);
     const [gr, setGr] = useState(0);
@@ -62,16 +63,13 @@ export default function Home() {
 
         const { day, month, hour } = dateTime;
 
-        const response = await axios.get(
-            'https://usina-tcc.vercel.app/temperature',
-            {
-                params: {
-                    day: day,
-                    month: month,
-                    hour: +hour,
-                },
-            }
-        );
+        const response = await axios.get('https://usina-tcc.vercel.app/temperature', {
+            params: {
+                day: day,
+                month: month,
+                hour: +hour,
+            },
+        });
 
         setIsDay(+hour >= 5 && +hour < 18);
         if (+hour === 5 || +hour === 17) {
@@ -121,6 +119,13 @@ export default function Home() {
     useEffect(() => {
         mudarTemperatura([33]);
     }, [t2m]);
+
+    useEffect(() => {
+        setCookie('usina-tcc-temperatura', temperatura.toString(), {
+            maxAge: 60 * 60 * 24 * 30,
+        });
+        console.log('biscoito porra', getCookie('usina-tcc-temperatura'));
+    }, [temperatura]);
 
     return (
         <main
