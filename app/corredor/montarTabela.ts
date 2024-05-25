@@ -42,7 +42,7 @@ export const montarTabela = ({
             titulo: 'Tecnologia',
             ehPlacaZoada: dados.ehPlacaZoada,
             valorPlacaBoa: 'Topcon Bifacial',
-            valorPlacaRuim: 'Canadian Solar',
+            valorPlacaRuim: 'Topcon Bifacial',
             exibirCor: false,
         },
         {
