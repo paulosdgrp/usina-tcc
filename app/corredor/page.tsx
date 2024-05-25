@@ -5,31 +5,67 @@ import { SolarPanelHorizontal } from '../temperature/components/solar-panel';
 import { useToast } from '@/components/ui/use-toast';
 import Link from 'next/link';
 import { getCookie } from 'cookies-next';
+import { ItemListaModalProps, montarTabela } from './montarTabela';
 
 export default function Corredor() {
-    const searchParams = useSearchParams();
-    const corridorNumber = Number(searchParams.get('numero')!);
-    const [selectedModule, setSelectedModule] = useState<number | null>(null);
-    const temperaturaAtual = parseInt(
-        getCookie('usina-tcc-temperatura')?.toString() || '0'
-    );
-    const handleModuleClick = (index: number) => {
-        setSelectedModule(index);
-    };
-
-    const handleModuleClose = () => {
-        setSelectedModule(null);
-    };
-
-    useEffect(() => {
-        console.log('biscoito porra - detalhe da usina', temperaturaAtual);
-    }, [temperaturaAtual]);
-
     const random = (max: number, min: number): number =>
         Math.floor(Math.random() * (max - min + 1) + min);
 
-    const correnteAtual = +(17.51*(1+(25 - temperaturaAtual) * (0.05/100))).toFixed(2);
+    const searchParams = useSearchParams();
+    const corridorNumber = Number(searchParams.get('numero')!);
+    const [selectedModule, setSelectedModule] = useState<number | null>(null);
+    
+    const t2m = parseInt(getCookie('usina-tcc-t2m')?.toString() || '0');
+    
+    const handleModuleClick = (index: number) => {
+        setSelectedModule(index);
+    };
+    
+    const handleModuleClose = () => {
+        setSelectedModule(null);
+    };
+    
+    const temperaturaAtualPlacaRuim = parseInt(
+        getCookie('usina-tcc-temperatura')?.toString() || '0'
+    );
+    const temperaturaAtualPlacaBoa = random(44, t2m + 1);
+
+    const eficienciaPlacaRuim = 22.5 - (temperaturaAtualPlacaRuim - 25) * 0.3;
+    
+    const correnteAtualPlacaRuim = +(
+        18.49 *
+        (1 + (25 - temperaturaAtualPlacaRuim) * (0.05 / 100))
+    ).toFixed(2);
+
+    const correnteAtualPlacaBoa = +(
+        17.51 *
+        (1 + (25 - temperaturaAtualPlacaBoa) * (0.05 / 100))
+    ).toFixed(2);
+
     const tensaoAtual = random(15, 1);
+    const potenciaAtual = tensaoAtual * correnteAtualPlacaRuim;
+    
+    const ehPlacaZoada = selectedModule === 3 && corridorNumber === 3;
+    useEffect(() => {
+        console.log(
+            'biscoito porra - detalhe da usina',
+            temperaturaAtualPlacaRuim,
+            t2m,
+            eficienciaPlacaRuim
+        );
+    }, [temperaturaAtualPlacaRuim, t2m, eficienciaPlacaRuim]);
+
+    const listaItems = montarTabela({
+        correnteAtualPlacaRuim,
+        correnteAtualPlacaBoa,
+        eficienciaPlacaRuim,
+        ehPlacaZoada,
+        temperaturaAtualPlacaBoa,
+        temperaturaAtualPlacaRuim,
+        tensaoAtual,
+        potenciaAtual,
+    });
+
     return (
         <main className='sky-bg flex min-h-screen flex-col items-center gap-2 p-8 sm:px-16 sm:py-24 bg-slate-200'>
             <p className='font-bold'>String {corridorNumber}</p>
@@ -49,136 +85,50 @@ export default function Corredor() {
                 </div>
             ))}
             {selectedModule !== null && (
-                <Modal
-                    showChamado={selectedModule === 3 && corridorNumber === 3}
-                    onClose={handleModuleClose}
-                >
+                <Modal showChamado={ehPlacaZoada} onClose={handleModuleClose}>
                     <div className='w-full'>
                         <p className='font-extrabold text-lg'>
                             Módulo {selectedModule + 1}
                         </p>
                     </div>
                     <div className='flex flex-col gap-2 w-full mt-8'>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Marca</p>
-                            <p>Canadian Solar</p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Tecnologia</p>
-                            <p>Topcon Bifacial</p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Temperatura Atual</p>
-                            <p>{temperaturaAtual}°C</p>
-                        </div>
-                        <div
-                            className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3 && corridorNumber === 3
-                                    ? 'text-black'
-                                    : 'text-black'
-                            }`}
-                        >
-                            <p className='font-extrabold'>Potência Máxima</p>
-                            <p>
-                                {selectedModule === 3 && corridorNumber === 3
-                                    ? '700wp'
-                                    : '700Wp'}
-                            </p>
-                        </div>
-                        <div
-                            className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3 && corridorNumber === 3
-                                    ? 'text-red-500'
-                                    : 'text-green-500'
-                            }`}
-                        >
-                            <p className='font-extrabold'>Potência Atual</p>
-                            <p>
-                                {selectedModule === 3 && corridorNumber === 3
-                                    ? `${(tensaoAtual * correnteAtual).toFixed(2)}W`
-                                    : `${random(700, 600)}W`}
-                            </p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Tensão Máxima</p>
-                            <p>40V</p>
-                        </div>
-                        <div
-                            className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3 && corridorNumber === 3
-                                    ? 'text-red-500'
-                                    : 'text-green-500'
-                            }`}
-                        >
-                            <p className='font-extrabold'>Tensão Atual</p>
-                            <p>
-                                {selectedModule === 3 && corridorNumber === 3
-                                    ? `${tensaoAtual}V`
-                                    : `${random(40, 35)}V`}
-                            </p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Corrente Máxima</p>
-                            <p>17.51A</p>
-                        </div>
-                        <div
-                            className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3 && corridorNumber === 3
-                                    ? 'text-red-500'
-                                    : 'text-green-500'
-                            }`}
-                        >
-                            <p className='font-extrabold'>
-                                Corrente Atual Placa
-                            </p>
-                            <p>
-                                {selectedModule === 3 && corridorNumber === 3
-                                    ? `${correnteAtual}A`
-                                    : '17.51A'}
-                            </p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Tensão de circuito aberto</p>
-                            <p>47,9V</p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Corrente de curto circuito</p>
-                            <p>18.49A</p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>
-                                Eficiencia do Modulo
-                            </p>
-                            <p>22.5%</p>
-                        </div>{' '}
-                        <div
-                            className={`flex flex-row justify-between w-full ${
-                                selectedModule === 3 && corridorNumber === 3
-                                    ? 'text-red-500'
-                                    : 'text-green-500'
-                            }`}
-                        >
-                            <p className='font-extrabold'>Eficiencia Atual</p>
-                            <p>
-                                {selectedModule === 3 && corridorNumber === 3
-                                    ? `${(22.5 - ((temperaturaAtual - 25) * 0.3)).toFixed(1)}%`
-                                    : `${random(22, 20)}.5%`}
-                            </p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Degradação Anual</p>
-                            <p>0,40%</p>
-                        </div>
-                        <div className='flex flex-row justify-between w-full'>
-                            <p className='font-extrabold'>Dimensões</p>
-                            <p>2384x1393x33mm</p>
-                        </div>
+                        {listaItems.map((item, index) => (
+                            <ItemListaModal
+                                key={index}
+                                titulo={item.titulo}
+                                valorPlacaBoa={item.valorPlacaBoa}
+                                valorPlacaRuim={item.valorPlacaRuim}
+                                exibirCor={item.exibirCor}
+                                ehPlacaZoada={item.ehPlacaZoada}
+                            />
+                        ))}
                     </div>
                 </Modal>
             )}
         </main>
     );
 }
+
+const ItemListaModal = ({
+    titulo,
+    valorPlacaBoa,
+    valorPlacaRuim,
+    exibirCor,
+    ehPlacaZoada,
+}: ItemListaModalProps) => {
+    const cor = ehPlacaZoada ? 'text-red-500' : 'text-green-500';
+
+    return (
+        <div
+            className={`flex flex-row justify-between w-full ${
+                exibirCor ? cor : 'text-black'
+            }`}
+        >
+            <p className='font-extrabold'>{titulo}</p>
+            <p>{ehPlacaZoada ? valorPlacaRuim : valorPlacaBoa}</p>
+        </div>
+    );
+};
 
 interface ModalProps {
     children: ReactNode;

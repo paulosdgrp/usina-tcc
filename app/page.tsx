@@ -118,6 +118,7 @@ export default function Home() {
 
     useEffect(() => {
         mudarTemperatura([33]);
+        setCookie('usina-tcc-t2m', t2m.toString());
     }, [t2m]);
 
     useEffect(() => {
@@ -171,7 +172,7 @@ export default function Home() {
                     <div
                         className={`flex flex-row items-center justify-between p-2 ${secondStripe}`}
                     >
-                        <p className='font-bold'>P (W)</p>
+                        <p className='font-bold'>Potência (Wp)</p>
                         <p>{p}</p>
                     </div>
                     <div
